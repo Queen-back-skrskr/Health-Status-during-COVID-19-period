@@ -1,0 +1,36 @@
+---
+title: "COVID-19 Infected Cases in Toronto"
+author: "Jinwen Tao, Zhifei Cao, Yuanxi Gong"
+date: "2021-2-10"
+output:
+  pdf_document: default
+  html_document: default
+---
+
+```{r setup, include=FALSE}
+#install.packages("opendatatoronto")
+#install.packages("dplyr")  
+library(dplyr) 
+library(ggplot2)
+```
+
+## Data
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
+library(opendatatoronto)
+COVID_19_Cases_in_Toronto_packages <- search_packages("COVID-19 Cases in Toronto")
+COVID_19_Cases_in_Toronto_resources <- COVID_19_Cases_in_Toronto_packages %>%
+  list_package_resources()
+
+COVID_19_Cases_in_Toronto_statistics <-COVID_19_Cases_in_Toronto_resources %>%
+  get_resource()
+COVID_19_Cases_in_Toronto_data <- data.frame(COVID_19_Cases_in_Toronto_statistics)
+COVID_19_Cases_in_Toronto_data
+```
+
+
+
+
+
+
+
