@@ -1,0 +1,61 @@
+---
+title: "COVID-19 Infected Cases in Toronto"
+author: "Zhifei Cao"
+date: "2021-2-10"
+output:
+  pdf_document: default
+  html_document: default
+abstract: "This report mainly focuses on the infected cases during COVID-19 outbreak in Toronto after January 2020 in purpose of discovering some relations between infected outcomes and the patients’ age. By drawing the bar chart, it divides the infected population into different age groups and summarize the percentage of infected outcomes.We have found out the death rate and recovery rate after infecting with COVID-19 are highly associated with age. The COVID-19 could be more fatal to people who are in an old age and the young people tends to have higher recovery rate after infection."
+---
+
+
+```{r setup, include=FALSE}
+#install.packages("opendatatoronto")
+#install.packages("dplyr")  
+library(dplyr) 
+library(ggplot2)
+library(scales)
+```
+
+
+## Data
+
+```{r, echo=FALSE, message=FALSE}
+library(opendatatoronto)
+COVID_19_Cases_in_Toronto_packages <- search_packages("COVID-19 Cases in Toronto")
+COVID_19_Cases_in_Toronto_resources <- COVID_19_Cases_in_Toronto_packages %>%
+  list_package_resources()
+
+COVID_19_Cases_in_Toronto_statistics <-COVID_19_Cases_in_Toronto_resources %>%
+  get_resource()
+COVID_19_Cases_in_Toronto_data <- data.frame(COVID_19_Cases_in_Toronto_statistics)
+
+COVID_19_GROUP <- COVID_19_Cases_in_Toronto_data %>%
+  filter(Age.Group != "NaN") %>%
+  select( Age_group = Age.Group,
+          Outcome = Outcome
+          )
+head(COVID_19_GROUP, n=10)
+```
+
+The data set summarizes the COVID-19 cases in Toronto started from January 2020 by grouping the infected population based on their age, source of infection, reported date, gender, etc. I filter the unknown ages (which are the NA) from the age groups in order to analyze the data set more precisely. 
+
+Since there are 18 variables in the data set, I only pick 2 variables (age groups and outcome) in purpose of finding some patterns and relationships between age and the infected outcome.  In total, there are 16,913 observations in the data set and this is a preview of how the new data set looks like in the table which is an example of first 10 rows of the entire data set.
+The age groups (in years) are divided into ≤19, 20-29, 30-39, 40-49, 50-59, 60-69, 70-79, 80-89 and 90+ and the outcome demonstrates the current state of each case with a fatal outcome, a resolved outcome, or an active outcome. By creating a new data set based on these two variables, it will illustrate some relations between the outcome and their age like how the outcomes varies among different age groups. 
+
+# References
+
+- Sharla Gelfand (2020). opendatatoronto: Access the City of Toronto Open Data Portal. R
+  package version 0.1.3. https://CRAN.R-project.org/package=opendatatoronto
+
+- R Core Team (2020). R: A language and environment for statistical computing. R, Foundation for Statistical Computing, Vienna, Austria. URL, https://www.R-project.org/.
+
+- JJ Allaire and Yihui Xie and Jonathan McPherson and Javier Luraschi and Kevin Ushey and Aron Atkins and Hadley Wickham and Joe Cheng and Winston Chang and Richard Iannone (2020). rmarkdown: Dynamic Documents for R. R package version 2.3. URL https://rmarkdown.rstudio.com.
+
+
+
+
+
+
+
+
