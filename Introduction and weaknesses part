@@ -1,0 +1,24 @@
+# Introduction
+
+The Toronto Public Health released the data set of the ongoing COVID-19 outbreak in Toronto and reported the infected cases after January 2020. 
+We are aim to investigate the reported COVID-19 cases in Toronto and extract useful data to analyze the influence of COVID-19. Specifically, I 
+am interested in the how the infected outcomes change in different age groups and how the effect of COVID-19 on each cases. 
+
+We have found that the death rate of infected population is highly associated with their age and the elderly tend to have greater risk to get 
+infected and lead to fatal outcome. People in a young age have low possibilities to be infected with COVID-19 and their recovery rate are higher 
+than 85%. We will summarize the data, plot them in a bar chart, analyzing the data from the chart and discuss the how different ages affect 
+outcomes after infection. 
+
+Although the data has limited cases and updating weekly, we may find more accurate data of COVID-19 cases by conducting some research on the 
+COVID-19 in Canada instead of Toronto in the future. 
+
+
+
+# Weaknesses and next steps
+
+Since the data mainly focuses on the reported cases after January 2020 and will be refreshed weekly, it could still have some infected cases 
+which are not reported to the hospital. In addition, the symptoms of COVID-19 are similar to catching a cold or some common lung infection. 
+Thus,it is possible that people who actually infected by COVID-19 have not aware of their illness and they may not go to hospital for treatment. 
+Therefore, the data of infected cases in Toronto may not accurate since there are many unreported and unknown cases. In the next step, I am look 
+forward to investigate the COVID-19 outbreak in Canada instead of Toronto since this has a lager sample of infected cases and data will demonstrate 
+the relationship between age and infected outcomes more precisely.
