@@ -1,0 +1,138 @@
+---
+title: "COVID-19 Infected Cases in Toronto"
+author: "Jinwen Tao, Zhifei Cao, Yuanxi Gong"
+date: "2021-2-10"
+output:
+  pdf_document: default
+  html_document: default
+abstract: "This report mainly focuses on the infected cases during COVID-19 outbreak in Toronto after January 2020 in purpose of discovering some relations between infected outcomes and the patients’ age. By drawing the bar chart, it divides the infected population into different age groups and summarize the percentage of infected outcomes.We have found out the death rate and recovery rate after infecting with COVID-19 are highly associated with age. The COVID-19 could be more fatal to people who are in an old age and the young people tends to have higher recovery rate after infection."
+---
+
+
+```{r setup, include=FALSE}
+#install.packages("opendatatoronto")
+#install.packages("dplyr")  
+library(dplyr) 
+library(ggplot2)
+library(scales)
+```
+
+## Introduction
+
+The Toronto Public Health released the data set of the ongoing COVID-19 outbreak in Toronto and reported the infected cases after January 2020. We are aim to investigate the reported COVID-19 cases in Toronto and extract useful data to analyze the influence of COVID-19. Specifically, I  am interested in the how the infected outcomes change in different age groups and how the effect of COVID-19 on each cases. 
+
+We have found that the death rate of infected population is highly associated with their age and the elderly tend to have greater risk to get infected and lead to fatal outcome. People in a young age have low possibilities to be infected with COVID-19 and their recovery rate are higher than 85%.  We will summarize the data, plot them in a bar chart, analyzing the data from the chart and discuss the how different ages affect outcomes after infection. 
+
+Although the data has limited cases and updating weekly, we may find more accurate data of COVID-19 cases by conducting some research on the COVID-19 in Canada instead of Toronto in the future. 
+
+
+## Data
+
+```{r, echo=FALSE, message=FALSE}
+library(opendatatoronto)
+COVID_19_Cases_in_Toronto_packages <- search_packages("COVID-19 Cases in Toronto")
+COVID_19_Cases_in_Toronto_resources <- COVID_19_Cases_in_Toronto_packages %>%
+  list_package_resources()
+
+COVID_19_Cases_in_Toronto_statistics <-COVID_19_Cases_in_Toronto_resources %>%
+  get_resource()
+COVID_19_Cases_in_Toronto_data <- data.frame(COVID_19_Cases_in_Toronto_statistics)
+
+COVID_19_GROUP <- COVID_19_Cases_in_Toronto_data %>%
+  filter(Age.Group != "NaN") %>%
+  select( Age_group = Age.Group,
+          Outcome = Outcome
+          )
+head(COVID_19_GROUP, n=10)
+```
+
+The data set summarizes the COVID-19 cases in Toronto started from January 2020 by grouping the infected population based on their age, source of infection, reported date, gender, etc. I filter the unknown ages (which are the NA) from the age groups in order to analyze the data set more precisely. 
+
+Since there are 18 variables in the data set, I only pick 2 variables (age groups and outcome) in purpose of finding some patterns and relationships between age and the infected outcome.  In total, there are 16,913 observations in the data set and this is a preview of how the new data set looks like in the table which is an example of first 10 rows of the entire data set.
+The age groups (in years) are divided into ≤19, 20-29, 30-39, 40-49, 50-59, 60-69, 70-79, 80-89 and 90+ and the outcome demonstrates the current state of each case with a fatal outcome, a resolved outcome, or an active outcome. By creating a new data set based on these two variables, it will illustrate some relations between the outcome and their age like how the outcomes varies among different age groups. 
+
+
+## Graph 
+
+```{r, echo=FALSE, results='hide',message=FALSE}
+Agetable <- table(COVID_19_GROUP$Age_group)
+Agetable
+```
+
+This shows an overview of the infected population.The group that aged between 20 to 29 has the largest infected number which reported 3049 infected cases. Moreover, approximately half of the infected people are older than 50 years old and people who are 19 years old or younger only have 1311 infected cases.
+
+```{r, echo=FALSE, results="hide",warning=FALSE,message=FALSE}
+COVID_19_DATA <- COVID_19_GROUP %>%
+  group_by(Age_group, Outcome) %>%
+  summarize(n = n()) %>% 
+  mutate(pct = n/sum(n),
+         lbl = scales::percent(pct))
+COVID_19_DATA
+
+ggplot(COVID_19_DATA, 
+       aes(x = factor(Age_group,
+                      levels = c("19 and younger",
+                                 "20 to 29 Years","30 to 39 Years",
+                                 "40 to 49 Years","50 to 59 Years", 
+                                 "60 to 69 Years","70 to 79 Years",
+                                 "80 to 89 Years","90 and older"),
+                      labels = c("≤19", "20-29",
+                                 "30-39", "40-49", "50-59", 
+                                 "60-69", "70-79", "80-89", "90+")),
+           y = pct,
+           fill = factor(Outcome, 
+                         levels = c("ACTIVE", "FATAL", "RESOLVED")
+                         ))) + 
+  
+  
+  geom_bar(stat = "identity", position = "fill") +
+  scale_y_continuous(breaks = seq(0, 1, .2), 
+                     label = percent) +
+  geom_text(aes(label = lbl), 
+            size = 3, 
+            position = position_stack(vjust = 0.5))+
+  scale_fill_brewer(palette = "Set2") +
+  labs(y = "PERCENT", 
+       fill = "CURRENT OUTCOME",
+       x = "AGE",
+       title = " COVID 19 INFECTION OUTCOME BY AGES",
+       caption = "Source: Toronto Public Health, 2020.") +
+  theme_minimal()
+
+
+```
+
+By plotting a bar chart, we divide the infected population in Toronto into three main categories based on their age groups. This chart clearly demonstrate the percentage of the current state in each age group that whether the cases are reported as fatal outcome, a resolved outcome or still an active outcome. The fatal outcomes are the death cases and it could be viewed in the graph that the old-aged groups who are older than 50 years old have a higher mortality rate than other groups. Specifically, the death cases in 80+ groups exceed 25% which indicate the COVID-19 has a more serious effect on the elderly. Comparing with the infected people who younger than 39 years old, the death rate almost reaches zero. Nevertheless, there are relatively higher rate of active outcome in the young groups which means around 10% of them are still infected with COVID-19 and not recover yet. For people who aged under 70 years old, the resolved cases have percentage over 85%. This shows that a large proportion of the age groups under 70 years old are reported as recovered or had no symptoms over 14 days and not currently hospitalized.
+
+
+## Graph Discussion
+There are some obvious relationship between the age and the outcomes of the infected people. As the ages increase, the death rate of people who infected with COVID-19 demonstrates an upward trend. The old-aged groups (over 50 years old) are the most dangerous population since half of the COVID-19 infected cases are old groups and their fatal rate are extremely higher than other groups. This means the old-aged people have greatest risk of infection and cause severe illness or even lead to death. On the contrary, COVID-19 has less effect on young-aged and mid-aged groups and they are more likely to recover after infection. More specially, the population that has the age under 70 years old has a greater chance to get recovered after being infected. 
+In general, the risk of getting infected by COVID-19 and causing death is higher in elderly since they  are more vulnerable and have weaken immune systems. Although the recovery rates are higher in young and mid- aged groups, they have the largest infected population and they should also take protective measures to prevent themselves from the COVID-19 infection. 
+
+
+## Weaknesses and next steps
+
+Since the data mainly focuses on the reported cases after January 2020 and will be refreshed weekly, it could still have some infected cases which are not reported to the hospital. In addition, the symptoms of COVID-19 are similar to catching a cold or some common lung infection. Thus, it is possible that people who actually infected by COVID-19 have not aware of their illness and they may not go to hospital for treatment. Therefore, the data of infected cases in Toronto may not accurate since there are many unreported and unknown cases. In the next step, I am look forward to investigate the COVID-19 outbreak in Canada instead of  Toronto since this has a lager sample of infected cases and data will demonstrate the relationship between age and infected outcomes more precisely.
+
+
+
+
+# References
+- Hadley Wickham and Dana Seidel (2020). scales: Scale Functions for Visualization. R
+  package version 1.1.1. https://CRAN.R-project.org/package=scales
+
+- Sharla Gelfand (2020). opendatatoronto: Access the City of Toronto Open Data Portal. R
+  package version 0.1.3. https://CRAN.R-project.org/package=opendatatoronto
+
+- Stephenson, Laura B; Harell, Allison; Rubenson, Daniel; Loewen, Peter John, 2020, '2019 Canadian Election Study - Online Survey', https://doi.org/10.7910/DVN/DUS88V, Harvard Dataverse, V1
+-  Hadley Wickham, Jim Hester and Winston Chang (2020). devtools: Tools to Make Developing R Packages Easier. https://devtools.r-lib.org/,https://github.com/r-lib/devtools.
+
+- R Core Team (2020). R: A language and environment for statistical computing. R, Foundation for Statistical Computing, Vienna, Austria. URL, https://www.R-project.org/.
+
+- JJ Allaire and Yihui Xie and Jonathan McPherson and Javier Luraschi and Kevin Ushey and Aron Atkins and Hadley Wickham and Joe Cheng and Winston Chang and Richard Iannone (2020). rmarkdown: Dynamic Documents for R. R package version 2.3. URL https://rmarkdown.rstudio.com.
+
+
+
+
+
+
