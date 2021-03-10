@@ -1,0 +1,446 @@
+---
+title: "Data and coding of health satisfaction"
+output:
+  pdf_document: default
+  html_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library("tidyverse")
+
+# We select variables dvn2a, h2hrs,d3, dvyrsmod,n3 and dvsex 
+# from the raw data and rename them with Health_Satisfaction_level,
+# Hours_of_Sleep_per_night, Flu_shot_yes, Smoking_Years,
+# Degree_of_Relaxation,Gender respectively. 
+
+Data_health<- read.csv("/Users/cindycao/Desktop/AA2vfFTU.csv")
+Effects_on_health <- Data_health %>%
+  select(Health_Satisfaction_level = dvn2a,
+         Hours_of_Sleep_per_night = h2hrs,
+         Flu_shot_yes = d3,
+         Smoking_Years = dvyrsmod,
+         Degree_of_Relaxation = n3,
+         Gender = dvsex) %>%
+  
+# We filter out the not applicable and no answer data
+  filter(Health_Satisfaction_level != "9",
+         Health_Satisfaction_level != "8",
+         Health_Satisfaction_level != "3",
+         Health_Satisfaction_level != "6",
+         Degree_of_Relaxation != "9",
+         Degree_of_Relaxation != "8",
+         Flu_shot_yes != "9",
+         Flu_shot_yes != "8",
+         Smoking_Years != "97",
+         Smoking_Years != "98",
+         Hours_of_Sleep_per_night != "99",
+         Hours_of_Sleep_per_night != "98"
+         )
+# We change the variable Gender of 2 into 0 
+Effects_on_health$Gender[Effects_on_health$Gender == "2"] <- "0"
+
+# We change the variable Health_Satisfaction_level of 4 into 3 
+Effects_on_health$Health_Satisfaction_level[
+  Effects_on_health$Health_Satisfaction_level == "4"] <- "3"
+
+# We change the variable Health_Satisfaction_level of 5 into 4 
+Effects_on_health$Health_Satisfaction_level[
+  Effects_on_health$Health_Satisfaction_level == "5"] <- "4"
+# We change the variable Flu_shot_yes of 2 into 0
+Effects_on_health$Flu_shot_yes[Effects_on_health$Flu_shot_yes == "2"] <- "0"
+data.frame(Effects_on_health)
+
+glimpse(Effects_on_health)
+
+```
+
+```{r}
+# install.packages("formattable") 
+library(formattable)
+
+# We select variables dvn2a, h2hrs,d3, dvyrsmod,n3 and dvsex 
+# from the raw data and rename them with Health_Satisfaction_level,
+# Hours_of_Sleep_per_night, Flu_shot_yes, Smoking_Years,
+# Degree_of_Relaxation,Gender respectively. 
+
+Effects_on_health2 <- Data_health %>%
+  select(Health_Satisfaction_level = dvn2a,
+         Hours_of_Sleep_per_night = h2hrs,
+         Flu_shot_yes = d3,
+         Smoking_Years = dvyrsmod,
+         Degree_of_Relaxation = n3,
+         Gender = dvsex) %>%
+  filter(Health_Satisfaction_level != "9",
+         Health_Satisfaction_level != "8",
+         Health_Satisfaction_level != "3",
+         Health_Satisfaction_level != "6",
+         Degree_of_Relaxation != "9",
+         Degree_of_Relaxation != "8",
+         Flu_shot_yes != "9",
+         Flu_shot_yes != "8",
+         Smoking_Years != "97",
+         Smoking_Years != "98",
+         Hours_of_Sleep_per_night != "99",
+         Hours_of_Sleep_per_night != "98"
+         ) 
+# We change the variable Gender of 2 into Female, 1 into Male 
+Effects_on_health2$Gender[Effects_on_health2$Gender == "2"] <- "Female"
+Effects_on_health2$Gender[Effects_on_health2$Gender == "1"] <- "Male"
+
+# We change the variable Health_Satisfaction_level of 1 into Level 1 - Very dissatisfied
+# We change the variable Health_Satisfaction_level of 2 into Level 2 - Somewhat dissatisfied
+# We change the variable Health_Satisfaction_level of 3 into Level 3 - Somewhat satisfied
+# We change the variable Health_Satisfaction_level of 4 into Level 1 - Level 4 - Very satisfied
+Effects_on_health2$Health_Satisfaction_level[
+  Effects_on_health2$Health_Satisfaction_level == "1"] <- 
+  "Level 1 - Very dissatisfied"
+Effects_on_health2$Health_Satisfaction_level[
+  Effects_on_health2$Health_Satisfaction_level == "2"] <-
+  "Level 2 - Somewhat dissatisfied"
+Effects_on_health2$Health_Satisfaction_level[
+  Effects_on_health2$Health_Satisfaction_level == "4"] <- 
+  "Level 3 - Somewhat satisfied"
+Effects_on_health2$Health_Satisfaction_level[
+  Effects_on_health2$Health_Satisfaction_level == "5"] <-
+  "Level 4 - Very satisfied"
+
+# We change the variable Flu_shot_yes of 2 into NO
+# We change the variable Flu_shot_yes of 1 into YES
+Effects_on_health2$Flu_shot_yes[Effects_on_health2$Flu_shot_yes == "2"] <- "NO"
+Effects_on_health2$Flu_shot_yes[Effects_on_health2$Flu_shot_yes == "1"] <- "YES"
+
+# We rename the varibles' name in Effects_on_health2 data 
+Effects_on_health3 <- Effects_on_health2 %>% 
+  rename("Health Satisfication Level" = Health_Satisfaction_level,
+         "Hours of Sleep per night" = Hours_of_Sleep_per_night,
+         "Take Flu shot?" = Flu_shot_yes,
+         "Years of Smoking" = Smoking_Years,
+         "Degree of Relaxation" = Degree_of_Relaxation
+         )
+
+# We change the font format and color of variable Gender
+# When Gender is male, we have the color "#9EABD6"
+# When Gender is female, we have the color "#F694C1"
+improvement_formatter <- 
+  formatter("Gender", 
+            style = x ~ style(
+              font.weight = "bold", 
+              color = ifelse(x == "Male","#9EABD6", ifelse(x == "Female",
+                                                           "#F694C1", "black"))))
+
+
+# We change the font format and color of variable Flu_shot_yes
+# When Flu_shot_yes is YES, we have the color "#71CA97"
+# When Flu_shot_yes is NO, we have the color "#ff7f7f"
+improvement_formatter2 <- 
+  formatter("Flu_shot_yes", 
+            style = x ~ style(
+              font.weight = "bold", 
+              color = ifelse(x == "YES", "#71CA97", ifelse(x == "NO", 
+                                                           "#ff7f7f", "black"))))
+
+
+# We use formattable() to draw the table of Effects_on_health3 data
+Table_of_Raw_Data <- formattable(Effects_on_health3,
+                                 align =c("l","c","c","c","c", "c", "c", "c", "r"),
+                                 list("Health Satisfication Level"= 
+                                        formatter( "span", style = ~ style(color = "#433F3F",font.weight = "bold")), 
+  "Hours of Sleep per night"= color_tile( "#DeF7E9", "#71CA97"),
+   "Years of Smoking"= color_tile( "#DeF7E9", "#71CA97"),
+  "Degree of Relaxation"= color_tile( "#DeF7E9", "#71CA97"),
+  "Gender" = improvement_formatter,
+  "Take Flu shot?"= improvement_formatter2
+   ))
+
+ table_overall <- head(Table_of_Raw_Data, n=20)
+ table_overall
+```
+
+
+```{r}
+Health_Satisfaction_level2 <- as.numeric(Effects_on_health$Health_Satisfaction_level)
+
+model <- glm(Health_Satisfaction_level2 ~ Hours_of_Sleep_per_night +
+               Smoking_Years + Flu_shot_yes + Degree_of_Relaxation, 
+             data = Effects_on_health, family = "poisson")
+summary(model)
+```
+
+
+```{r}
+# We filter the variable Flu_shot_yes with value not equal to 0
+Flu_shot_yes_number <- Effects_on_health %>%
+  filter(Flu_shot_yes != "0") %>%
+  count(Flu_shot_yes)
+Flu_shot_yes_1 <- Effects_on_health %>%
+  filter(Flu_shot_yes != "0")
+
+# First we count the number of people who took flu shots in the different range
+#of health satisfaction levels and mutate a new variable that is called "prop", 
+#which is the probability of people who took flu shots in every health satisfaction
+#levels among all the respondents. After that, we use round() function to create
+#the above probabilities round to 3 digits. Then, we mutate these new probabilities 
+#into the data frame by creating a new column "percentage_yes" in pecentage representation.
+Health_Satisfaction_level_number_yes <- Flu_shot_yes_1 %>%
+  count(Health_Satisfaction_level) %>%
+  mutate(prop=n/Flu_shot_yes_number$n)
+round_prop_yes <- round(Health_Satisfaction_level_number_yes$prop, digits = 3)
+Health_Satisfaction_level_number_yes <- Health_Satisfaction_level_number_yes %>%
+  mutate(percentage_yes = round_prop_yes*100)
+
+# We change the variable Health_Satisfaction_level of 1 into Level 1 - Very dissatisfied
+# We change the variable Health_Satisfaction_level of 2 into Level 2 - Somewhat dissatisfied
+# We change the variable Health_Satisfaction_level of 3 into Level 3 - Somewhat satisfied
+# We change the variable Health_Satisfaction_level of 4 into Level 1 - Level 4 - Very satisfied
+Health_Satisfaction_level_number_yes$Health_Satisfaction_level[
+  Health_Satisfaction_level_number_yes$Health_Satisfaction_level == "1"] <-
+  "Level 1 - Very dissatisfied"
+Health_Satisfaction_level_number_yes$Health_Satisfaction_level[
+  Health_Satisfaction_level_number_yes$Health_Satisfaction_level == "2"] <-
+  "Level 2 - Somewhat dissatisfied"
+Health_Satisfaction_level_number_yes$Health_Satisfaction_level[
+  Health_Satisfaction_level_number_yes$Health_Satisfaction_level == "3"] <- 
+  "Level 3 - Somewhat satisfied"
+Health_Satisfaction_level_number_yes$Health_Satisfaction_level[
+  Health_Satisfaction_level_number_yes$Health_Satisfaction_level == "4"] <-
+  "Level 4 - Very satisfied"
+
+# We rename the varibles' name in Health_Satisfaction_level_number_yes data 
+Health_Satisfaction_level_number_yes2 <- Health_Satisfaction_level_number_yes %>%
+  rename("Health Satisfication Level" = Health_Satisfaction_level,
+         "Number of People" = n,
+         "Proportion" = prop,
+         "People with Flu shot (%)" = percentage_yes)
+
+# We use formattable() to draw the table of Health_Satisfaction_level_number_yes2 data
+Table_of_Flu_shot_yes <- formattable(Health_Satisfaction_level_number_yes2, align =c("l","c","c","c","c", "c", "c", "c", "r"),
+                                     list("Health Satisfication Level"=
+                                            formatter( "span", style = ~ style(color = "#433F3F",font.weight = "bold")), 
+   "Number of People"= color_tile( "#FFE4E2","#F9AFC8"),
+    "Proportion"= color_tile("#FFE4E2","#F9AFC8"),
+  "Degree of Relaxation"= color_tile("#FFE4E2","#F9AFC8"),
+  "People with Flu shot (%)" = color_tile( "#FFE4E2","#F9AFC8")
+   ))
+Table_of_Flu_shot_yes
+```
+
+
+```{r}
+# We filter the variable Flu_shot_yes with value not equal to 1
+Flu_shot_no_number <- Effects_on_health %>%
+  filter(Flu_shot_yes != "1") %>%
+  count(Flu_shot_yes)
+Flu_shot_no_1 <- Effects_on_health %>%
+  filter(Flu_shot_yes != "1")
+
+# First we count the number of people who did not take flu shots in the 
+#different range of health satisfaction levels and mutate a new variable
+#that is called "prop", which is the probability of people who did not take
+#flu shots in every health satisfaction levels among all the respondents.
+#After that, we use round() function to create the above probabilities 
+#round to 3 digits. Then, we mutate these new probabilities into the data
+#frame by creating a new column "percentage_no" in pecentage representation.
+Health_Satisfaction_level_number_no <- Flu_shot_no_1 %>%
+  count(Health_Satisfaction_level) %>%
+  mutate(prop=n/Flu_shot_no_number$n)
+round_prop_no <- round(Health_Satisfaction_level_number_no$prop, digits = 2)
+Health_Satisfaction_level_number_no <- Health_Satisfaction_level_number_no %>%
+  mutate(percentage_no = round_prop_no*100)
+
+# We change the variable Health_Satisfaction_level of 1 into Level 1 - Very dissatisfied
+# We change the variable Health_Satisfaction_level of 2 into Level 2 - Somewhat dissatisfied
+# We change the variable Health_Satisfaction_level of 3 into Level 3 - Somewhat satisfied
+# We change the variable Health_Satisfaction_level of 4 into Level 1 - Level 4 - Very satisfied
+Health_Satisfaction_level_number_no$Health_Satisfaction_level[
+  Health_Satisfaction_level_number_no$Health_Satisfaction_level == "1"] <-
+  "Level 1 - Very dissatisfied"
+Health_Satisfaction_level_number_no$Health_Satisfaction_level[
+  Health_Satisfaction_level_number_no$Health_Satisfaction_level == "2"] <-
+  "Level 2 - Somewhat dissatisfied"
+Health_Satisfaction_level_number_no$Health_Satisfaction_level[
+  Health_Satisfaction_level_number_no$Health_Satisfaction_level == "3"] <-
+  "Level 3 - Somewhat satisfied"
+Health_Satisfaction_level_number_no$Health_Satisfaction_level[
+  Health_Satisfaction_level_number_no$Health_Satisfaction_level == "4"] <-
+  "Level 4 - Very satisfied"
+
+# We rename the varibles' name in Health_Satisfaction_level_number_no data 
+Health_Satisfaction_level_number_no2 <- Health_Satisfaction_level_number_no %>%
+  rename("Health Satisfication Level" = Health_Satisfaction_level,
+         "Number of People" = n,
+         "Proportion" = prop,
+         "People without Flu shot (%)" = percentage_no)
+
+# We use formattable() to draw the table of Health_Satisfaction_level_number_no2 data
+Table_of_Flu_shot_no <- formattable(Health_Satisfaction_level_number_no2, 
+                                    align =c("l","c","c","c","c", "c", "c", "c", "r"), 
+                                    list("Health Satisfication Level"=
+                                           formatter( "span", style = ~ style(color = "#433F3F",font.weight = "bold")), 
+   "Number of People"= color_tile( "#B8CFBE","#5DA1AD"),
+    "Proportion"= color_tile("#B8CFBE","#5DA1AD"),
+  "Degree of Relaxation"= color_tile("#B8CFBE","#5DA1AD"),
+  "People without Flu shot (%)" = color_tile( "#B8CFBE","#5DA1AD")
+   ))
+Table_of_Flu_shot_no
+```
+```{r}
+#install.packages("ggpubr")
+library("ggpubr")
+pie <- ggplot(Health_Satisfaction_level_number_yes, aes(x="", y = percentage_yes, fill=Health_Satisfaction_level)) + geom_bar(stat="identity", width=3) +
+  coord_polar("y", start=0) + 
+  geom_text(aes(label = paste0(round(percentage_yes), "%")), 
+            position = position_stack(vjust = 0.5)) + scale_fill_manual(values=c("#9BBFE0","#E8A09A","#FBE29F","#C6D68F")) + 
+  labs(x = NULL, y = NULL, fill = NULL, 
+       title ="Health Satisfication level\nafter taking flu shot") + 
+  theme_classic() +
+  theme(axis.line = element_blank(),
+          axis.text = element_blank(),
+          axis.ticks = element_blank(),
+          plot.title = element_text(hjust = 0.5, color = "#666666")) 
+
+pie2 <- ggplot(Health_Satisfaction_level_number_no, aes(x="", y = percentage_no, fill=Health_Satisfaction_level)) +
+  geom_bar(stat="identity", width=3) + 
+  coord_polar("y", start=0) + geom_text(aes(label =paste0(round(percentage_no), "%")),
+                                        position = position_stack(vjust = 0.5)) + 
+  scale_fill_manual(values=c("#9BBFE0","#E8A09A","#FBE29F","#C6D68F")) +
+  labs(x = NULL, y = NULL, fill = NULL, title = "Health Satisfication level\nwithout taking flu shot") + 
+  theme_classic() +
+  theme(axis.line = element_blank(),
+          axis.text = element_blank(),
+          axis.ticks = element_blank(),
+          plot.title = element_text(hjust = 0.5, color = "#433F3F")) + guides(fill=guide_legend(title=" Health Satisfication Levels")) 
+
+figure <- ggarrange(
+  pie, pie2, labels = c("Figure A", "Figure B"),
+  common.legend = TRUE, legend = "right"
+  )
+figure
+
+```
+
+```{r}
+# We draw the bar chart of Health_Satisfaction_level based on gender
+Health_satisfaction_Level_by_Gender <- ggplot(Effects_on_health, 
+       aes(x = factor(Health_Satisfaction_level,
+                      levels = c("1",
+                                 "2",
+                                 "3", 
+                                 "4"),
+                      labels = c("Very dissatisfied", "Somewhat dissatisfied",
+                                 "Somewhat satisfied", "Very satisfied")),
+           fill = factor(Gender, 
+                         levels = c("1", "0"),labels = c("Male", "Female")
+                         
+                         ))) + geom_bar(color = 'black', position = 'dodge') +
+  labs(title = 'Health satisfaction Level by Gender', 
+       x = 'Health satisfaction Level', y = 'Number of People',fill = "Gender") + 
+  theme_minimal()
+
+Health_satisfaction_Level_by_Gender
+```
+
+
+```{r}
+# Compute the data of Hours of Sleep per night vs. mean of health satisfaction level
+Hours_of_Sleep_vs_mean <- Effects_on_health %>%
+  group_by(Hours_of_Sleep_per_night) %>%
+  summarise(mean_satisfaction_level= mean(as.numeric(Health_Satisfaction_level)),
+            .groups = 'drop')
+
+# Draw the bar chart with x-axis as Hours of Sleep per night and y-axis
+# as mean satisfaction level
+Health_VS_Sleep <- ggplot(Hours_of_Sleep_vs_mean, aes(x = Hours_of_Sleep_per_night, y=mean_satisfaction_level)) + 
+  geom_bar(colour="black", fill="#9BBFE0", width=.6, stat="identity") + 
+  labs(y = "Mean Satisfaction Level", x = "Hours of Sleep per night",
+       title = "How sleeping time affects Health Satisfaction Level" ) + 
+  theme_classic() + 
+  geom_text(aes(x = Hours_of_Sleep_per_night, 
+                y=mean_satisfaction_level, 
+                label = round(mean_satisfaction_level, 2),vjust = -0.6),
+            color ="#5DA1AD") + geom_line(color = "#9B3192") + geom_point()
+Health_VS_Sleep 
+```
+
+
+```{r}
+# install.packages("RColorBrewer")
+library("RColorBrewer")
+
+ Relax_VS_Health <- ggplot(Effects_on_health , 
+                                      aes(x = Degree_of_Relaxation,
+                                          fill = Health_Satisfaction_level)) + 
+  geom_bar() + 
+    theme_classic() +
+  labs(title = "How Degree of Relaxation affects individual health satisfacton level ",
+       x = "Degree of Relaxation",
+       y = "Number of people")+ coord_flip()  + 
+   scale_fill_brewer(palette="Greens")
+Relax_VS_Health
+
+```
+
+```{r}
+
+
+ifelse(Effects_on_health$Smoking_Years <=5,"≤ 5",Effects_on_health$Smoking_Years)
+
+  ifelse(Effects_on_health$Smoking_Years <=10,"≤ 10",Effects_on_health$Smoking_Years)
+  
+library(dplyr)
+
+
+Smoking_h <- Effects_on_health %>% mutate(Smoking_Years_Groups = 
+                                       case_when( Smoking_Years == 0 ~ "0",
+                                         Smoking_Years > 0  & Smoking_Years <= 5 ~ '0 - 5',
+                                        Smoking_Years  > 5 & Smoking_Years <= 10 ~ '6 - 10',
+                                        Smoking_Years  > 10 & Smoking_Years <= 20 ~ '11 - 20',
+                                        Smoking_Years  > 20 & Smoking_Years <= 30 ~ '21 - 30',
+                                        Smoking_Years  > 30 & Smoking_Years <= 40 ~ '31 - 40',
+                                        Smoking_Years  > 40 & Smoking_Years <= 50 ~ '41 - 50',
+                                        Smoking_Years  > 50 & Smoking_Years <= 60 ~ '51 - 60',
+                                        Smoking_Years  > 60 ~ '61 - older ',
+                                            ))
+
+Smoking_Years_vs_Health <- Smoking_h %>%
+  group_by(Smoking_Years_Groups) %>%
+  summarise(mean_satisfaction_level1= mean(as.numeric(Health_Satisfaction_level)),
+            .groups = 'drop')
+  
+
+Health_VS_Smoking <- ggplot(Smoking_Years_vs_Health, aes(x = Smoking_Years_Groups, y= mean_satisfaction_level1)) + 
+  geom_bar(colour="black", fill="#9BBFE0", width=.6, stat="identity") + 
+  labs(y = "Mean Satisfaction Level", x = "Hours of Sleep per night",
+       title = "How sleeping time affects Health Satisfaction Level" ) + 
+  theme_classic() + 
+  geom_text(aes(x = Smoking_Years_Groups, 
+                y= mean_satisfaction_level1, 
+                label =round(mean_satisfaction_level1, 2),vjust = -0.6),
+            color ="#5DA1AD") + geom_line(color = "#9B3192")  
+Health_VS_Sleep 
+
+# Draw the bar chart with x-axis as Hours of Sleep per night and y-axis
+# as mean satisfaction level
+Health_VS_Sleep <- ggplot(Smoking_Years_vs_mean,
+                          aes(x = Health_Satisfaction_level, y= mean_Smoking_Years)) + 
+  geom_bar(colour="black", fill="#E8A09A", width=.6, stat="identity") + 
+  labs(y = "Mean Years of Smoking", x = "Health Satisfaction Level",
+       title = "Health Satisfaction Levelbased on years of smoking" ) + 
+  theme_classic() + 
+  geom_text(aes(x = Health_Satisfaction_level, 
+                y= mean_Smoking_Years, 
+                label = round(mean_Smoking_Years, 2),vjust = -0.5),
+            color ="#FF6361") + geom_line(color = "#FFA600") + geom_point()
+Health_VS_Sleep
+
+Health_VS_Sleep <- ggplot(Smoking_Years_vs_mean,
+                          aes(x = Health_Satisfaction_level, y= mean_Smoking_Years)) + 
+  labs(y = "Mean Years of Smoking", x = "Health Satisfaction Level",
+       title = "Health Satisfaction Levelbased on years of smoking" ) + 
+  theme_classic() + 
+  geom_text(aes(x = Health_Satisfaction_level, 
+                y= mean_Smoking_Years, 
+                label = round(mean_Smoking_Years, 2),vjust = -0.5),
+            color ="#FF6361") + geom_point()
+```
+
